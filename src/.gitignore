@@ -1,0 +1,85 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv/
+
+# Django stuff
+*.log
+.local_settings.py
+db.sqlite3  # если вдруг используешь SQLite для разработки
+media/
+staticfiles/  # результат collectstatic — генерится автоматически
+
+# PostgreSQL (если БД лежит в папке проекта — НЕ РЕКОМЕНДУЕТСЯ!)
+pg_data/
+postgresql.conf
+pg_hba.conf
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases
+logs/
+*.log
+
+# Local env files (секреты, пароли)
+.env
+local_settings.py
+
+# Backup files
+*.bak
+*.tmp
+*.old
+
+# Python
+.python-version  # pyenv
+
+# Скрипты бэкапа БД (если содержат пароли)
+backup_db.bat
+backup_db.sh
+restore_db.bat
+restore_db.sh
+
+# Папка с оффлайн-пакетами (можно не игнорировать, если хочешь хранить зависимости в репо)
+# offline_packages/
