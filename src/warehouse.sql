@@ -1,22 +1,31 @@
--- Таблица сотрудников / пользователей
+-- ======================
+-- СБРОС (если база была)
+-- ======================
+DROP TABLE IF EXISTS checkout;
+DROP TABLE IF EXISTS item;
+DROP TABLE IF EXISTS location;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS person;
+
+-- ======================
+-- ТАБЛИЦЫ
+-- ======================
+
 CREATE TABLE person (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
 );
 
--- Таблица категорий товаров
 CREATE TABLE category (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
 );
 
--- Таблица мест хранения (склад, полка, ячейка)
 CREATE TABLE location (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
 );
 
--- Таблица товаров
 CREATE TABLE item (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sku TEXT UNIQUE NOT NULL,
@@ -29,7 +38,6 @@ CREATE TABLE item (
     FOREIGN KEY (location_id) REFERENCES location(id)
 );
 
--- Таблица выдачи/возврата
 CREATE TABLE checkout (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     item_id INTEGER NOT NULL,
@@ -44,3 +52,39 @@ CREATE TABLE checkout (
     FOREIGN KEY (person_id) REFERENCES person(id),
     FOREIGN KEY (issued_by_id) REFERENCES person(id)
 );
+
+-- ======================
+-- ДАННЫЕ
+-- ======================
+
+-- Люди
+INSERT INTO person (name) VALUES ('Иван Петров');
+INSERT INTO person (name) VALUES ('Анна Смирнова');
+INSERT INTO person (name) VALUES ('Сергей Иванов');
+
+-- Категории
+INSERT INTO category (name) VALUES ('Инструменты');
+INSERT INTO category (name) VALUES ('Расходные материалы');
+INSERT INTO category (name) VALUES ('Оборудование');
+
+-- Локации
+INSERT INTO location (name) VALUES ('Склад №1');
+INSERT INTO location (name) VALUES ('Склад №2');
+INSERT INTO location (name) VALUES ('Цех');
+
+-- Товары
+INSERT INTO item (sku, name, category_id, location_id, quantity, notes)
+VALUES ('HMR-001', 'Молоток', 1, 1, 15, 'Стандартный молоток');
+
+INSERT INTO item (sku, name, category_id, location_id, quantity, notes)
+VALUES ('SCW-010', 'Саморезы 4x40 (упаковка)', 2, 1, 200, 'В коробке по 100 шт.');
+
+INSERT INTO item (sku, name, category_id, location_id, quantity, notes)
+VALUES ('DRL-100', 'Дрель электрическая', 3, 2, 5, 'Makita, 220V');
+
+-- Выдачи (пример)
+INSERT INTO checkout (item_id, person_id, quantity, checked_out_at, due_at, is_disposable, issued_by_id)
+VALUES (1, 2, 1, '2025-10-03 09:00:00', '2025-10-10 18:00:00', 0, 1);
+
+INSERT INTO checkout (item_id, person_id, quantity, checked_out_at, is_disposable, issued_by_id)
+VALUES (2, 3, 50, '2025-10-02 14:30:00', 1, 1);
