@@ -88,8 +88,15 @@ class WareHouseSql:
         self.cur.execute('SELECT * FROM person')
         return self.cur.fetchall()
     
+    def selectInfo(self,tableName):
+        self.cur.execute(f'SELECT * FROM {tableName}')
+        return self.cur.fetchall()
+
     def __enter__(self):
         return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.conn.close()
     
     def close(self):
         self.conn.close()
@@ -98,3 +105,8 @@ class WareHouseSql:
 with WareHouseSql() as warehouse:
     data = warehouse.info()
     print(data)
+    tableName = input()
+    data = warehouse.selectInfo(tableName)
+    print(data)
+
+    
