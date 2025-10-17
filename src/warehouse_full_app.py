@@ -7,7 +7,7 @@ import shutil
 import os
 
 # === НАСТРОЙКИ ===
-DB_NAME = "warehouse.db"  
+DB_NAME = "src/warehouse.db"  
 
 # === БАЗА ДАННЫХ ===
 def get_db_connection():
