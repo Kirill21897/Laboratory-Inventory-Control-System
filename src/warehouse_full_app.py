@@ -157,7 +157,7 @@ class WarehouseApp:
         top_frame.pack(fill=tk.X, padx=10, pady=5)
         tk.Label(top_frame, text="Поиск:").pack(side=tk.LEFT)
         self.search_var = tk.StringVar()
-        self.search_var.trace("w", lambda *args: self.load_items())
+        self.search_var.trace_add("write", lambda *args: self.load_items())
         tk.Entry(top_frame, textvariable=self.search_var, width=40).pack(side=tk.LEFT, padx=5)
 
         # Кнопки
