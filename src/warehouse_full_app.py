@@ -140,6 +140,7 @@ class WarehouseApp:
         self.root = root
         self.root.title("Учёт материальных ценностей — Кафедра")
         self.root.geometry("1100x750")
+        self.search_after = None
 
         # Меню
         menubar = tk.Menu(root)
@@ -157,7 +158,7 @@ class WarehouseApp:
         top_frame.pack(fill=tk.X, padx=10, pady=5)
         tk.Label(top_frame, text="Поиск:").pack(side=tk.LEFT)
         self.search_var = tk.StringVar()
-        self.search_var.trace("w", lambda *args: self.load_items())
+        self.search_var.trace_add("write", lambda *args: self.on_search_change())
         tk.Entry(top_frame, textvariable=self.search_var, width=40).pack(side=tk.LEFT, padx=5)
 
         # Кнопки
@@ -195,6 +196,12 @@ class WarehouseApp:
             self.tree.heading(col, text=col)
             self.tree.column(col, width=100)
         self.load_items()
+
+    # Задержка результатов поиска при вводе
+    def on_search_change(self, *args):
+        if self.search_after:
+            self.root.after_cancel(self.search_after)
+        self.search_after = self.root.after(300, self.load_items)
 
     def show_history(self):
         self.current_view = "history"
