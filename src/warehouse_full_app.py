@@ -65,7 +65,13 @@ def search_items(query):
         rows = cur.fetchall()
         if not q:
             return rows
-        return [r for r in rows if str(r[2]).casefold().find(q) != -1]
+        result = []
+        for r in rows:
+            sku_cf = ("" if r[1] is None else str(r[1])).casefold()
+            name_cf = ("" if r[2] is None else str(r[2])).casefold()
+            if q in sku_cf or q in name_cf:
+                result.append(r)
+        return result
 
 def get_lookup_data(table):
     with get_db_connection() as conn:
