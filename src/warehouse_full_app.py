@@ -52,6 +52,7 @@ def get_checkout_history():
         return cur.fetchall()
 
 def search_items(query):
+    q = (query or "").casefold()
     with get_db_connection() as conn:
         cur = conn.cursor()
         cur.execute("""
@@ -59,10 +60,12 @@ def search_items(query):
             FROM item i
             JOIN category c ON i.category_id = c.id
             JOIN location l ON i.location_id = l.id
-            WHERE i.sku LIKE ? OR i.name LIKE ?
             ORDER BY i.name
-        """, (f"%{query}%", f"%{query}%"))
-        return cur.fetchall()
+        """)
+        rows = cur.fetchall()
+        if not q:
+            return rows
+        return [r for r in rows if str(r[2]).casefold().find(q) != -1]
 
 def get_lookup_data(table):
     with get_db_connection() as conn:
