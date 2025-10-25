@@ -205,6 +205,12 @@ class WarehouseApp:
             self.tree.column(col, width=100)
         self.load_items()
 
+    # Задержка результатов поиска при вводе
+    def on_search_change(self, *args):
+        if self.search_after:
+            self.root.after_cancel(self.search_after)
+        self.search_after = self.root.after(300, self.load_items)
+
     def show_history(self):
         self.current_view = "history"
         columns = ("ID", "Товар", "Кому", "Выдал", "Кол-во", "Выдано", "Возвращено", "Срок", "Расходник")
