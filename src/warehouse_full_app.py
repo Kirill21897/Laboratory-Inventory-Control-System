@@ -13,6 +13,7 @@ DB_NAME = "src/warehouse.db"
 # === БАЗА ДАННЫХ ===
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
+    conn.execute("PRAGMA foreign_keys = ON") # Включает внешние ключи для SQLite
     return conn
 
 def backup_db():
