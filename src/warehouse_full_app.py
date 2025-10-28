@@ -5,6 +5,7 @@ from datetime import datetime
 import csv
 import shutil
 import os
+import re
 
 # === НАСТРОЙКИ ===
 DB_NAME = "src/warehouse.db"  
@@ -52,7 +53,7 @@ def get_checkout_history():
         return cur.fetchall()
 
 def search_items(query):
-    q = (query or "").casefold()
+    q = WarehouseApp._normalizer(query)
     with get_db_connection() as conn:
         cur = conn.cursor()
         cur.execute("""
@@ -67,8 +68,8 @@ def search_items(query):
             return rows
         result = []
         for r in rows:
-            sku_cf = ("" if r[1] is None else str(r[1])).casefold()
-            name_cf = ("" if r[2] is None else str(r[2])).casefold()
+            sku_cf = WarehouseApp._normalizer(r[1])
+            name_cf = WarehouseApp._normalizer(r[2])
             if q in sku_cf or q in name_cf:
                 result.append(r)
         return result
@@ -196,6 +197,11 @@ class WarehouseApp:
             self.edit_item()
         elif self.current_view == "history":
             pass  # можно добавить детали
+
+    # Игнор пробелов и тире
+    def _normalizer(s):
+        s = "".join(str(s or "").split()).casefold()
+        return re.sub(r"[-_/().]", "", s)
 
     def show_items(self):
         self.current_view = "items"
