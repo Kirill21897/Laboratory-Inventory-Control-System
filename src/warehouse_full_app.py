@@ -393,13 +393,16 @@ class WarehouseApp:
         win.title("Возврат товара")
         win.geometry("600x400")
 
+        # --- Поле поиска (локальное для этого окна) ---
         search_frame = tk.Frame(win)
         search_frame.pack(fill=tk.X, padx=10, pady=10)
-        tk.Label(search_frame, text="Поиск (Серийный номер/Название товара):").pack(side=tk.LEFT)
+        tk.Label(search_frame, text="Поиск (Название/Получатель):").pack(side=tk.LEFT)
+
         search_var = tk.StringVar()
-        search_var.trace_add("write", lambda *args: self.on_search_change())
+
         tk.Entry(search_frame, textvariable=search_var, width=30).pack(side=tk.LEFT, padx=5)
 
+        # --- Таблица ---
         cols = ("ID", "Товар", "Кому", "Кол-во", "Выдано")
         tree = ttk.Treeview(win, columns=cols, show="headings")
         for c in cols:
@@ -407,17 +410,33 @@ class WarehouseApp:
             tree.column(c, width=100)
         tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        for row in not_returned:
-            tree.insert("", "end", values=(row[0], row[1], row[2], row[4], row[5]))
+        # --- Локальный фильтр для этого окна ---
+        def apply_filter():
+            q = WarehouseApp._normalizer(search_var.get())
+            # очистить текущие строки
+            for iid in tree.get_children():
+                tree.delete(iid)
+            # отфильтровать и вставить (row: 0=id,1=item_name,2=person,3=issued_by,4=qty,5=checked_out_at,...)
+            for row in not_returned:
+                name_n   = WarehouseApp._normalizer(row[1])
+                person_n = WarehouseApp._normalizer(row[2])
+                if (not q) or (q in name_n) or (q in person_n):
+                    tree.insert("", "end", values=(row[0], row[1], row[2], row[4], row[5]))
+
+        # привязываем УНИВЕРСАЛЬНЫЙ дебаунсер к ЭТОМУ окну и ЭТОЙ функции
+        search_var.trace_add("write", WarehouseApp.make_debounce(win, 300, apply_filter))
+
+        # первичная отрисовка
+        apply_filter()
 
         def confirm_return():
             sel = tree.selection()
             if not sel: return
             checkout_id = tree.item(sel[0])["values"][0]
-            item_name = tree.item(sel[0])["values"][1]
-            qty = tree.item(sel[0])["values"][3]
-            item_id = None
-            # Найдём item_id по имени (лучше хранить в данных, но для простоты)
+            item_name   = tree.item(sel[0])["values"][1]
+            qty         = tree.item(sel[0])["values"][3]
+
+            # Найдём item_id по имени (лучше хранить в таблице)
             with get_db_connection() as conn:
                 cur = conn.cursor()
                 cur.execute("SELECT id FROM item WHERE name = ?", (item_name,))
