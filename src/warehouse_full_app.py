@@ -311,8 +311,8 @@ class WarehouseApp:
                     messagebox.showinfo("Успех", "Товар добавлен!")
                 win.destroy()
                 self.load_items()
-            except Exception as e:
-                messagebox.showerror("Ошибка", str(e))
+            except Exception:
+                messagebox.showerror("Ошибка!", "Необходимо заполнить все поля")
 
         tk.Button(win, text="Сохранить", command=save).pack(pady=10)
 
