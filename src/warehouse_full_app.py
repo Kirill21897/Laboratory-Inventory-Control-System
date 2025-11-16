@@ -17,9 +17,23 @@ def get_db_connection():
     return conn
 
 def backup_db():
-    backup_name = f"{DB_NAME}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    shutil.copy2(DB_NAME, backup_name)
-    return backup_name
+    db_path = DB_NAME
+    # Папка, где лежит файл БД
+    db_dir = os.path.dirname(db_path) or "."
+    # Папка для бэкапов внутри неё: "src/backups"
+    backup_dir = os.path.join(db_dir, "backups")
+
+    # Создаём папку backups, если её ещё нет
+    os.makedirs(backup_dir, exist_ok=True)
+
+    # Имя файла БД без пути: "warehouse.db"
+    base_name = os.path.basename(db_path)
+    timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+    backup_filename = f"{base_name}.backup_{timestamp}"
+
+    backup_path = os.path.join(backup_dir, backup_filename)
+    shutil.copy2(db_path, backup_path)
+    return backup_path
 
 def get_all_items():
     with get_db_connection() as conn:
