@@ -43,6 +43,7 @@ def get_all_items():
             FROM item i
             JOIN category c ON i.category_id = c.id
             JOIN location l ON i.location_id = l.id
+            WHERE i.is_deleted = 0
             ORDER BY i.name
         """)
         return cur.fetchall()
@@ -76,6 +77,7 @@ def search_items(query):
             FROM item i
             JOIN category c ON i.category_id = c.id
             JOIN location l ON i.location_id = l.id
+            WHERE i.is_deleted = 0
             ORDER BY i.name
         """)
         rows = cur.fetchall()
@@ -92,7 +94,7 @@ def search_items(query):
 def get_lookup_data(table):
     with get_db_connection() as conn:
         cur = conn.cursor()
-        cur.execute(f"SELECT id, name FROM {table} ORDER BY name")
+        cur.execute(f"SELECT id, name FROM {table} WHERE is_deleted = 0 ORDER BY name")
         return cur.fetchall()
 
 def add_item(sku, name, cat_id, loc_id, qty, notes):
@@ -115,7 +117,7 @@ def update_item(item_id, sku, name, cat_id, loc_id, qty, notes):
 def delete_item(item_id):
     with get_db_connection() as conn:
         cur = conn.cursor()
-        cur.execute("DELETE FROM item WHERE id = ?", (item_id,))
+        cur.execute("UPDATE item SET is_deleted = 1 WHERE id = ?", (item_id,)) # Soft delete
 
 def issue_item(item_id, person_id, issued_by_id, qty, due_at, is_disposable):
     with get_db_connection() as conn:
@@ -148,10 +150,11 @@ def update_lookup_record(table, record_id, name):
         cur = conn.cursor()
         cur.execute(f"UPDATE {table} SET name = ? WHERE id = ?", (name, record_id))
 
+# Reconsider delete_item()
 def delete_lookup_record(table, record_id):
     with get_db_connection() as conn:
         cur = conn.cursor()
-        cur.execute(f"DELETE FROM {table} WHERE id = ?", (record_id,))
+        cur.execute(f"UPDATE {table} SET is_deleted = 1 WHERE id = ?", (record_id,)) # Soft delete
 
 def export_to_csv(data, headers, filename):
     with open(filename, 'w', newline='', encoding='utf-8') as f:
@@ -331,7 +334,7 @@ class WarehouseApp:
             except StopIteration:
                 messagebox.showerror("Ошибка", "Выберите категорию и локацию из списка")
             except sqlite3.IntegrityError as e:
-                messagebox.showerror("Ошибка БД", f"Нарушено ограничение БД: {e}")
+                messagebox.showerror("Ошибка", f"Неуникальный серийный номер")
             except Exception as e:
                 messagebox.showerror("Неизвестная ошибка", str(e))
                 
