@@ -325,9 +325,16 @@ class WarehouseApp:
                     messagebox.showinfo("Успех", "Товар добавлен!")
                 win.destroy()
                 self.load_items()
-            except Exception:
-                messagebox.showerror("Ошибка!", "Необходимо заполнить все поля")
 
+            except ValueError:
+                messagebox.showerror("Ошибка", "Количество должно быть целым числом")
+            except StopIteration:
+                messagebox.showerror("Ошибка", "Выберите категорию и локацию из списка")
+            except sqlite3.IntegrityError as e:
+                messagebox.showerror("Ошибка БД", f"Нарушено ограничение БД: {e}")
+            except Exception as e:
+                messagebox.showerror("Неизвестная ошибка", str(e))
+                
         tk.Button(win, text="Сохранить", command=save).pack(pady=10)
 
         if item_id:
