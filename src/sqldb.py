@@ -79,34 +79,4 @@ import sqlite3
 # fetchall - [(),(),()] Список кортежей
 # fetchone - () - кортеж(первая по условию строка)
 
-class WareHouseSql:
-    def __init__(self, db_path="warehouse.db"):
-        self.conn = sqlite3.connect(db_path)
-        self.cur = self.conn.cursor()
-    
-    def info(self):
-        self.cur.execute('SELECT * FROM person')
-        return self.cur.fetchall()
-    
-    def selectInfo(self,tableName):
-        self.cur.execute(f'SELECT * FROM {tableName}')
-        return self.cur.fetchall()
-
-    def __enter__(self):
-        return self
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.conn.close()
-    
-    def close(self):
-        self.conn.close()
-
-# Usage:
-with WareHouseSql() as warehouse:
-    data = warehouse.info()
-    print(data)
-    tableName = input()
-    data = warehouse.selectInfo(tableName)
-    print(data)
-
     
