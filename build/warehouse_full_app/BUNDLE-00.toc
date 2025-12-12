@@ -1,0 +1,3 @@
+([('warehouse_full_app',
+   '/Users/fox/Laboratory-Inventory-Control-System/dist/warehouse_full_app',
+   'EXECUTABLE')],)
