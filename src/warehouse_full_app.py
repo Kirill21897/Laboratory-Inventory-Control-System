@@ -5,11 +5,16 @@ from datetime import datetime
 import csv
 import shutil
 import os
+import sys
 import re
 
 # === НАСТРОЙКИ ===
-DB_NAME = "src/warehouse.db"  
+def resource_path(rel_path: str) -> str:
+    # Works both in dev and in PyInstaller onefile/onedir
+    base = getattr(sys, "_MEIPASS", os.path.abspath("."))
+    return os.path.join(base, rel_path)
 
+DB_NAME = resource_path(os.path.join("src", "warehouse.db"))
 # === БАЗА ДАННЫХ ===
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
